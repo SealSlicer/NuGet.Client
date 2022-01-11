@@ -235,7 +235,7 @@ namespace NuGet.Commands.Test
                 dgSpec.AddProject(spec);
             }
 
-            var externalClosure = DependencyGraphSpecRequestProvider.GetExternalClosure(dgSpec, projectToRestore.Name).ToList();
+            var externalClosure = DependencyGraphSpecRequestProvider.GetExternalClosure(dgSpec, projectToRestore.RestoreMetadata.ProjectUniqueName).ToList();
 
             return new TestRestoreRequest(projectToRestore, sources, pathContext.UserPackagesFolder, logger)
             {
