@@ -29,7 +29,7 @@ namespace NuGet.Protocol
             {
                 if (_enhancedHttpRetryIsEnabled == null)
                 {
-                    _enhancedHttpRetryIsEnabled = GetBooleanFromEnvironmentVariable(ExperimentalRetryEnabledEnvVarName, false, _environmentVariableReader);
+                    _enhancedHttpRetryIsEnabled = GetBooleanFromEnvironmentVariable(ExperimentalRetryEnabledEnvVarName, defaultValue: true, _environmentVariableReader);
                 }
                 return (bool)_enhancedHttpRetryIsEnabled;
             }
@@ -44,7 +44,7 @@ namespace NuGet.Protocol
                 {
                     try
                     {
-                        _experimentalMaxNetworkTryCountValue = GetIntFromEnvironmentVariable(ExperimentalRetryTryCountEnvVarName, 6, _environmentVariableReader);
+                        _experimentalMaxNetworkTryCountValue = GetIntFromEnvironmentVariable(ExperimentalRetryTryCountEnvVarName, defaultValue: 6, _environmentVariableReader);
                     }
                     catch (Exception) { }
                 }
@@ -59,7 +59,7 @@ namespace NuGet.Protocol
             {
                 if (_experimentalRetryDelayMillisecondsValue == null)
                 {
-                    _experimentalRetryDelayMillisecondsValue = GetIntFromEnvironmentVariable(ExperimentalRetryDelayMsEnvVarName, 1000, _environmentVariableReader);
+                    _experimentalRetryDelayMillisecondsValue = GetIntFromEnvironmentVariable(ExperimentalRetryDelayMsEnvVarName, defaultValue: 1000, _environmentVariableReader);
                 }
                 return (int)_experimentalRetryDelayMillisecondsValue;
             }
