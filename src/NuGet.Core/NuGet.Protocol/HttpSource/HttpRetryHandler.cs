@@ -90,7 +90,7 @@ namespace NuGet.Protocol
                         {
                             log.LogVerbose("Enhanced retry: HttpRetryHandler is in a state that retry would have been abandoned or not waited if it were not enabled.");
                         }
-                        await Task.Delay(TimeSpan.FromMilliseconds((Math.Pow(2, tries) * request.RetryDelay.TotalMilliseconds) + new Random().Next(200)));
+                        await Task.Delay(TimeSpan.FromMilliseconds((Math.Pow(2, tries) * request.RetryDelay.TotalMilliseconds) + new Random().Next(200)), cancellationToken);
                     }
                     // Old behavior; always delay a constant amount
                     else
