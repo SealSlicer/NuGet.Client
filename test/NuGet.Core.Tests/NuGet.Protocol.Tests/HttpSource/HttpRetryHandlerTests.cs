@@ -439,9 +439,9 @@ namespace NuGet.Protocol.Tests
             TestEnvironmentVariableReader testEnvironmentVariableReader = new TestEnvironmentVariableReader(
                 new Dictionary<string, string>()
                 {
-                    { "NUGET_ENABLE_EXPERIMENTAL_HTTP_RETRY" , "true"},
-                    { "NUGET_EXPERIMENTAL_MAX_NETWORK_TRY_COUNT" , "11"},
-                    { "NUGET_EXPERIMENTAL_NETWORK_RETRY_DELAY_MILLISECONDS" , "3"}
+                    [EnhancedHttpRetryHelper.ExperimentalRetryEnabledEnvVarName] = bool.TrueString,
+                    [EnhancedHttpRetryHelper.ExperimentalRetryTryCountEnvVarName] = "11",
+                    [EnhancedHttpRetryHelper.ExperimentalRetryDelayMsEnvVarName] = "3"
                 });
 
             EnhancedHttpRetryHelper helper = new EnhancedHttpRetryHelper(testEnvironmentVariableReader);
@@ -472,6 +472,31 @@ namespace NuGet.Protocol.Tests
                 Assert.Equal(11, tries);
                 Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             }
+        }
+
+        [Theory]
+        [InlineData(null, EnhancedHttpRetryHelper.DefaultEnabled)]
+        [InlineData("true", true)]
+        [InlineData("false", false)]
+        [InlineData("0", EnhancedHttpRetryHelper.DefaultEnabled)]
+        [InlineData("something", EnhancedHttpRetryHelper.DefaultEnabled)]
+        public void HttpRetryHandler_EnhancedRetryOnByDefault(string value, bool expectedValue)
+        {
+            // Arrange
+            TestEnvironmentVariableReader testEnvironmentVariableReader = new TestEnvironmentVariableReader(
+                new Dictionary<string, string>()
+                {
+                    [EnhancedHttpRetryHelper.ExperimentalRetryEnabledEnvVarName] = value,
+                    [EnhancedHttpRetryHelper.ExperimentalRetryTryCountEnvVarName] = null,
+                    [EnhancedHttpRetryHelper.ExperimentalRetryDelayMsEnvVarName] = null
+                });
+
+            // Act
+            EnhancedHttpRetryHelper helper = new EnhancedHttpRetryHelper(testEnvironmentVariableReader);
+
+            Assert.Equal(helper.EnhancedHttpRetryEnabled, expectedValue);
+            Assert.Equal(helper.ExperimentalMaxNetworkTryCount, EnhancedHttpRetryHelper.DefaultRetryCount);
+            Assert.Equal(helper.ExperimentalRetryDelayMilliseconds, EnhancedHttpRetryHelper.DefaultDelayMilliseconds);
         }
 
         private static TimeSpan GetRetryMinTime(int tries, TimeSpan retryDelay)
