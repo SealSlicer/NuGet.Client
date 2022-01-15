@@ -5,11 +5,13 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Globalization;
+using NuGet.Commands;
 
 namespace NuGet.SolutionRestoreManager
 {
     [Export(typeof(IVsNuGetProjectUpdateEvents))]
     [Export(typeof(IVsNuGetProgressReporter))]
+    [Export(typeof(IRestoreProgressReporter))]
     [PartCreationPolicy(CreationPolicy.Shared)]
     public class VsRestoreProgressEvents : IVsNuGetProjectUpdateEvents, IVsNuGetProgressReporter
     {

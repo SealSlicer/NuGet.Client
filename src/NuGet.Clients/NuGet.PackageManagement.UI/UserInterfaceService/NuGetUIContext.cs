@@ -10,6 +10,7 @@ using Microsoft;
 using Microsoft.ServiceHub.Framework;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
+using NuGet.Commands;
 using NuGet.Configuration;
 using NuGet.PackageManagement.UI.Utility;
 using NuGet.PackageManagement.VisualStudio;
@@ -172,11 +173,16 @@ namespace NuGet.PackageManagement.UI
             var searchService = await NuGetSearchServiceReconnector.CreateAsync(serviceBroker, NuGetUIThreadHelper.JoinableTaskFactory, cancellationToken);
 #pragma warning restore CA2000 // Dispose objects before losing scope
 
+
+            // _nuGetProgressReporter = componentModel.GetService<IRestoreProgressReporter>();
+
             var packageManager = new NuGetPackageManager(
                 sourceRepositoryProvider,
                 settings,
                 solutionManager,
-                deleteOnRestartManager);
+                deleteOnRestartManager,
+                reporter: null // TODXCO NK
+                );
 
             var actionEngine = new UIActionEngine(
                 sourceRepositoryProvider,

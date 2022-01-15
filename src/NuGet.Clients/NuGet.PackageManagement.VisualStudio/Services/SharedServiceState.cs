@@ -56,7 +56,7 @@ namespace NuGet.PackageManagement.VisualStudio
                 SourceRepositoryProvider,
                 settings,
                 solutionManager,
-                deleteOnRestartManager);
+                deleteOnRestartManager); // TODO NK
         }
 
         public async ValueTask<IReadOnlyCollection<SourceRepository>> GetRepositoriesAsync(

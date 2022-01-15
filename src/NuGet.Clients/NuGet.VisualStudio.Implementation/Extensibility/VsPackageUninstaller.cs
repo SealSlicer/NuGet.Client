@@ -68,7 +68,7 @@ namespace NuGet.VisualStudio
                                _sourceRepositoryProvider,
                                _settings,
                                _solutionManager,
-                               _deleteOnRestartManager);
+                               _deleteOnRestartManager); // TODO NK
 
                         var uninstallContext = new UninstallationContext(removeDependencies, forceRemove: false);
                         var projectContext = new VSAPIProjectContext

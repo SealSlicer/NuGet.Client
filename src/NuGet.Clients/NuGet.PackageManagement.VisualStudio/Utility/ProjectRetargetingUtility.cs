@@ -69,7 +69,7 @@ namespace NuGet.PackageManagement.VisualStudio
                 sourceRepositoryProvider,
                 settings,
                 solutionManager,
-                deleteOnRestartManager);
+                deleteOnRestartManager); // TODO NK
 
             foreach (var packageReference in packageReferences)
             {

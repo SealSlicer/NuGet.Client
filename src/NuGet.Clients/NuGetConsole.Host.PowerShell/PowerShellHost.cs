@@ -458,7 +458,7 @@ namespace NuGetConsole.Host.PowerShell.Implementation
                     _sourceRepositoryProvider,
                     _settings.Value,
                     _solutionManager.Value,
-                    _deleteOnRestartManager.Value);
+                    _deleteOnRestartManager.Value); // TODO NK
 
                 var enumerator = new InstalledPackageEnumerator(_solutionManager.Value, _settings.Value);
                 var installedPackages = await enumerator.EnumeratePackagesAsync(packageManager, CancellationToken.None);

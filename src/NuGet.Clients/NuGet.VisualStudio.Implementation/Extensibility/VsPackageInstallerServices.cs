@@ -270,7 +270,7 @@ namespace NuGet.VisualStudio
                 _sourceRepositoryProvider,
                 _settings,
                 _solutionManager,
-                _deleteOnRestartManager);
+                _deleteOnRestartManager); // TODO NK
         }
 
         public bool IsPackageInstalled(Project project, string packageId)

@@ -514,7 +514,7 @@ namespace NuGet.VisualStudio
                 repoProvider,
                 _settings,
                 _solutionManager,
-                _deleteOnRestartManager);
+                _deleteOnRestartManager); // TODO NK
         }
     }
 }
