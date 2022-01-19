@@ -1481,7 +1481,8 @@ namespace NuGet.Commands.Test
                         generatePathProperty: true,
                         versionCentrallyManaged: false,
                         LibraryDependencyReferenceType.Direct,
-                        aliases: null);
+                        aliases: null,
+                        versionOverride: null);
 
                 var centralVersionFoo = new CentralPackageVersion("foo", VersionRange.Parse("1.0.0"));
                 var centralVersionBar = new CentralPackageVersion("bar", VersionRange.Parse("2.0.0"));
@@ -1532,15 +1533,20 @@ namespace NuGet.Commands.Test
                 var projectName = "TestProject";
                 var projectPath = Path.Combine(pathContext.SolutionRoot, projectName);
                 var outputPath = Path.Combine(projectPath, "obj");
-                var dependencyBar = new LibraryDependency(new LibraryRange(autoreferencedpackageId, VersionRange.Parse("3.0.0"), LibraryDependencyTarget.All),
-               LibraryIncludeFlags.All,
-               LibraryIncludeFlags.All,
-               new List<NuGetLogCode>(),
-               autoReferenced: true,
-               generatePathProperty: true,
-               versionCentrallyManaged: false,
-               LibraryDependencyReferenceType.Direct,
-               aliases: null);
+                var dependencyBar = new LibraryDependency(
+                    new LibraryRange(
+                        autoreferencedpackageId,
+                        VersionRange.Parse("3.0.0"),
+                        LibraryDependencyTarget.All),
+                    LibraryIncludeFlags.All,
+                    LibraryIncludeFlags.All,
+                    new List<NuGetLogCode>(),
+                    autoReferenced: true,
+                    generatePathProperty: true,
+                    versionCentrallyManaged: false,
+                    LibraryDependencyReferenceType.Direct,
+                    aliases: null,
+                    versionOverride: null);
 
                 var centralVersionFoo = new CentralPackageVersion("foo", VersionRange.Parse("1.0.0"));
                 var centralVersionBar = new CentralPackageVersion(autoreferencedpackageId.ToLowerInvariant(), VersionRange.Parse("2.0.0"));
