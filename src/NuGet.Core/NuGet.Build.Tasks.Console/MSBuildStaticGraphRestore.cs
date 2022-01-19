@@ -263,6 +263,8 @@ namespace NuGet.Build.Tasks.Console
             {
                 string version = packageReferenceItem.GetProperty("Version");
 
+                string versionOverride = packageReferenceItem.GetProperty("VersionOverride");
+
                 libraryDependencies.Add(new LibraryDependency
                 {
                     AutoReferenced = packageReferenceItem.IsPropertyTrue("IsImplicitlyDefined"),
@@ -274,7 +276,8 @@ namespace NuGet.Build.Tasks.Console
                         string.IsNullOrWhiteSpace(version) ? isCentralPackageVersionManagementEnabled ? null : VersionRange.All : VersionRange.Parse(version),
                         LibraryDependencyTarget.Package),
                     NoWarn = MSBuildStringUtility.GetNuGetLogCodes(packageReferenceItem.GetProperty("NoWarn")).ToList(),
-                    SuppressParent = GetLibraryIncludeFlags(packageReferenceItem.GetProperty("PrivateAssets"), LibraryIncludeFlagUtils.DefaultSuppressParent)
+                    SuppressParent = GetLibraryIncludeFlags(packageReferenceItem.GetProperty("PrivateAssets"), LibraryIncludeFlagUtils.DefaultSuppressParent),
+                    VersionOverride = string.IsNullOrWhiteSpace(versionOverride) ? null : VersionRange.Parse(versionOverride),
                 });
             }
 

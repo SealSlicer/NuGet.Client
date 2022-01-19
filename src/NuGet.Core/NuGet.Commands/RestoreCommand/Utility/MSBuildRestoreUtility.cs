@@ -627,6 +627,7 @@ namespace NuGet.Commands
                     AutoReferenced = IsPropertyTrue(item, "IsImplicitlyDefined"),
                     GeneratePathProperty = IsPropertyTrue(item, "GeneratePathProperty"),
                     Aliases = item.GetProperty("Aliases"),
+                    VersionOverride = GetVersionRange(item, defaultValue: null, "VersionOverride")
                 };
 
                 // Add warning suppressions
@@ -739,9 +740,9 @@ namespace NuGet.Commands
             return false;
         }
 
-        private static VersionRange GetVersionRange(IMSBuildItem item, VersionRange defaultValue)
+        private static VersionRange GetVersionRange(IMSBuildItem item, VersionRange defaultValue, string propertyName = "VersionRange")
         {
-            var rangeString = item.GetProperty("VersionRange");
+            var rangeString = item.GetProperty(propertyName);
             return GetVersionRange(rangeString, defaultValue);
         }
 

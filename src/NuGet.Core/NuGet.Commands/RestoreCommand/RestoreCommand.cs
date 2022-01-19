@@ -439,7 +439,7 @@ namespace NuGet.Commands
         private async Task<bool> AreCentralVersionRequirementsSatisfiedAsync()
         {
             // The dependencies should not have versions explicitelly defined if cpvm is enabled.
-            IEnumerable<LibraryDependency> dependenciesWithDefinedVersion = _request.Project.TargetFrameworks.SelectMany(tfm => tfm.Dependencies.Where(d => !d.VersionCentrallyManaged && !d.AutoReferenced));
+            IEnumerable<LibraryDependency> dependenciesWithDefinedVersion = _request.Project.TargetFrameworks.SelectMany(tfm => tfm.Dependencies.Where(d => !d.VersionCentrallyManaged && !d.AutoReferenced && d.VersionOverride == null));
             if (dependenciesWithDefinedVersion.Any())
             {
                 await _logger.LogAsync(RestoreLogMessage.CreateError(NuGetLogCode.NU1008, string.Format(CultureInfo.CurrentCulture, Strings.Error_CentralPackageVersions_VersionsNotAllowed, string.Join(";", dependenciesWithDefinedVersion.Select(d => d.Name)))));

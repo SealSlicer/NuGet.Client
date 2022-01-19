@@ -361,10 +361,12 @@ namespace NuGet.SolutionRestoreManager
 
         private static LibraryDependency ToPackageLibraryDependency(IVsReferenceItem item, bool cpvmEnabled)
         {
-            if (!TryGetVersionRange(item, out VersionRange versionRange))
+            if (!TryGetVersionRange(item, "Version", out VersionRange versionRange))
             {
                 versionRange = cpvmEnabled ? null : VersionRange.All;
             }
+
+            TryGetVersionRange(item, "VersionOverride", out VersionRange versionOverrideRange);
 
             var dependency = new LibraryDependency
             {
@@ -377,6 +379,7 @@ namespace NuGet.SolutionRestoreManager
                 AutoReferenced = GetPropertyBoolOrFalse(item, "IsImplicitlyDefined"),
                 GeneratePathProperty = GetPropertyBoolOrFalse(item, "GeneratePathProperty"),
                 Aliases = GetPropertyValueOrNull(item, "Aliases"),
+                VersionOverride = versionOverrideRange
             };
 
             // Add warning suppressions
@@ -456,10 +459,10 @@ namespace NuGet.SolutionRestoreManager
             return dependency;
         }
 
-        private static bool TryGetVersionRange(IVsReferenceItem item, out VersionRange versionRange)
+        private static bool TryGetVersionRange(IVsReferenceItem item, string propertyName, out VersionRange versionRange)
         {
             versionRange = null;
-            string versionRangeItemValue = GetPropertyValueOrNull(item, "Version");
+            string versionRangeItemValue = GetPropertyValueOrNull(item, propertyName);
 
             if (versionRangeItemValue != null)
             {
@@ -471,7 +474,7 @@ namespace NuGet.SolutionRestoreManager
 
         private static VersionRange GetVersionRange(IVsReferenceItem item)
         {
-            if (TryGetVersionRange(item, out VersionRange versionRange))
+            if (TryGetVersionRange(item, "Version", out VersionRange versionRange))
             {
                 return versionRange;
             }
