@@ -140,6 +140,7 @@ namespace NuGet.PackageManagement.UI
             IUserSettingsManager userSettingsManager,
             IDeleteOnRestartManager deleteOnRestartManager,
             INuGetLockService lockService,
+            IRestoreProgressReporter restoreProgressReporter,
             CancellationToken cancellationToken)
         {
             Assumes.NotNull(serviceBroker);
@@ -151,6 +152,7 @@ namespace NuGet.PackageManagement.UI
             Assumes.NotNull(userSettingsManager);
             Assumes.NotNull(deleteOnRestartManager);
             Assumes.NotNull(lockService);
+            Assumes.NotNull(restoreProgressReporter);
 
             cancellationToken.ThrowIfCancellationRequested();
 
@@ -173,15 +175,12 @@ namespace NuGet.PackageManagement.UI
             var searchService = await NuGetSearchServiceReconnector.CreateAsync(serviceBroker, NuGetUIThreadHelper.JoinableTaskFactory, cancellationToken);
 #pragma warning restore CA2000 // Dispose objects before losing scope
 
-
-            // _nuGetProgressReporter = componentModel.GetService<IRestoreProgressReporter>();
-
             var packageManager = new NuGetPackageManager(
                 sourceRepositoryProvider,
                 settings,
                 solutionManager,
                 deleteOnRestartManager,
-                reporter: null // TODXCO NK
+                reporter: restoreProgressReporter
                 );
 
             var actionEngine = new UIActionEngine(

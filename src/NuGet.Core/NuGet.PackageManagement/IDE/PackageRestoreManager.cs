@@ -304,7 +304,7 @@ namespace NuGet.PackageManagement
             return new NuGetPackageManager(
                 SourceRepositoryProvider,
                 Settings,
-                packagesFolderPath); // TODO NK
+                packagesFolderPath);
         }
 
         /// <summary>

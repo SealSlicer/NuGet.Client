@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using EnvDTE;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Threading;
+using NuGet.Commands;
 using NuGet.Common;
 using NuGet.Configuration;
 using NuGet.PackageManagement;
@@ -38,6 +39,7 @@ namespace NuGet.VisualStudio
         private readonly ISettings _settings;
         private readonly IVsProjectThreadingService _threadingService;
         private readonly INuGetTelemetryProvider _telemetryProvider;
+        private readonly IRestoreProgressReporter _restoreProgressReporter;
 
         [ImportingConstructor]
         public VsPackageInstallerServices(
@@ -46,7 +48,8 @@ namespace NuGet.VisualStudio
             ISettings settings,
             IDeleteOnRestartManager deleteOnRestartManager,
             IVsProjectThreadingService threadingService,
-            INuGetTelemetryProvider telemetryProvider)
+            INuGetTelemetryProvider telemetryProvider,
+            IRestoreProgressReporter restoreProgressReporter)
         {
             _solutionManager = solutionManager;
             _sourceRepositoryProvider = sourceRepositoryProvider;
@@ -54,6 +57,7 @@ namespace NuGet.VisualStudio
             _settings = settings;
             _threadingService = threadingService;
             _telemetryProvider = telemetryProvider;
+            _restoreProgressReporter = restoreProgressReporter;
         }
 
         public IEnumerable<IVsPackageMetadata> GetInstalledPackages()
@@ -270,7 +274,8 @@ namespace NuGet.VisualStudio
                 _sourceRepositoryProvider,
                 _settings,
                 _solutionManager,
-                _deleteOnRestartManager); // TODO NK
+                _deleteOnRestartManager,
+                _restoreProgressReporter);
         }
 
         public bool IsPackageInstalled(Project project, string packageId)
