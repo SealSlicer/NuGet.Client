@@ -196,6 +196,7 @@ namespace NuGet.PackageManagement
         /// <paramref name="nuGetProject" /> <paramref name="resolutionContext" /> and
         /// <paramref name="nuGetProjectContext" /> are used in the process.
         /// </summary>
+        [Obsolete("This is an unused method and may be removed in a future release. Please use other `InstallPackageAsync` methods.")]
         public Task InstallPackageAsync( // Test only
             NuGetProject nuGetProject,
             string packageId,
@@ -205,6 +206,10 @@ namespace NuGet.PackageManagement
             IEnumerable<SourceRepository> secondarySources,
             CancellationToken token)
         {
+            if (resolutionContext == null)
+            {
+                throw new ArgumentNullException(nameof(resolutionContext));
+            }
             var logger = new LoggerAdapter(nuGetProjectContext);
 
             var downloadContext = new PackageDownloadContext(resolutionContext.SourceCacheContext)
@@ -229,7 +234,7 @@ namespace NuGet.PackageManagement
         /// <paramref name="nuGetProject" /> <paramref name="resolutionContext" /> and
         /// <paramref name="nuGetProjectContext" /> are used in the process.
         /// </summary>
-        [Obsolete("This is an unused method and may be removed in a future release.")]
+        [Obsolete("This is an unused method and may be removed in a future release. Please use other `InstallPackageAsync` methods.")]
         public Task InstallPackageAsync( // no calls
             NuGetProject nuGetProject,
             string packageId,
@@ -288,7 +293,7 @@ namespace NuGet.PackageManagement
         /// <paramref name="packageId" /> to NuGetProject <paramref name="nuGetProject" />
         /// <paramref name="resolutionContext" /> and <paramref name="nuGetProjectContext" /> are used in the process.
         /// </summary>
-        public async Task InstallPackageAsync( // Called by other methods. Could be internal.
+        public async Task InstallPackageAsync(
             NuGetProject nuGetProject,
             string packageId,
             ResolutionContext resolutionContext,
@@ -330,7 +335,7 @@ namespace NuGet.PackageManagement
         /// Installs given <paramref name="packageIdentity" /> to NuGetProject <paramref name="nuGetProject" />
         /// <paramref name="resolutionContext" /> and <paramref name="nuGetProjectContext" /> are used in the process.
         /// </summary>
-        public Task InstallPackageAsync( // Test only
+        public Task InstallPackageAsync( // Test only - How does it compare to the other ones?
             NuGetProject nuGetProject,
             PackageIdentity packageIdentity,
             ResolutionContext resolutionContext,
@@ -339,6 +344,11 @@ namespace NuGet.PackageManagement
             IEnumerable<SourceRepository> secondarySources,
             CancellationToken token)
         {
+            if (resolutionContext == null)
+            {
+                throw new ArgumentNullException(nameof(resolutionContext));
+            }
+
             var logger = new LoggerAdapter(nuGetProjectContext);
 
             var downloadContext = new PackageDownloadContext(resolutionContext.SourceCacheContext)
@@ -388,7 +398,7 @@ namespace NuGet.PackageManagement
         /// Installs given <paramref name="packageIdentity" /> to NuGetProject <paramref name="nuGetProject" />
         /// <paramref name="resolutionContext" /> and <paramref name="nuGetProjectContext" /> are used in the process.
         /// </summary>
-        public async Task InstallPackageAsync( // VS Package installer and Tests.
+        public async Task InstallPackageAsync( // VS Package installer and Tests. - TODO NK
             NuGetProject nuGetProject,
             PackageIdentity packageIdentity,
             ResolutionContext resolutionContext,
@@ -397,6 +407,10 @@ namespace NuGet.PackageManagement
             IEnumerable<SourceRepository> secondarySources,
             CancellationToken token)
         {
+            if (resolutionContext == null)
+            {
+                throw new ArgumentNullException(nameof(resolutionContext));
+            }
             var logger = new LoggerAdapter(nuGetProjectContext);
 
             var downloadContext = new PackageDownloadContext(resolutionContext.SourceCacheContext)
