@@ -128,6 +128,11 @@ namespace NuGet.PackageManagement.VisualStudio
             return MSBuildStringUtility.IsTrue(await _vsProjectAdapter.GetPropertyValueAsync(ProjectBuildProperties.ManagePackageVersionsCentrally));
         }
 
+        private async Task<bool> IsCentralPackageVersionOverrideEnabledAsync()
+        {
+            return !MSBuildStringUtility.IsFalse(await _vsProjectAdapter.GetPropertyValueAsync(ProjectBuildProperties.EnablePackageVersionOverride));
+        }
+
         private async Task<string> GetSpecifiedAssemblyNameAsync()
         {
             return await _vsProjectAdapter.GetPropertyValueAsync(ProjectBuildProperties.AssemblyName);
@@ -492,7 +497,8 @@ namespace NuGet.PackageManagement.VisualStudio
                         await _vsProjectAdapter.GetRestorePackagesWithLockFileAsync(),
                         await _vsProjectAdapter.GetNuGetLockFilePathAsync(),
                         await _vsProjectAdapter.IsRestoreLockedAsync()),
-                    CentralPackageVersionsEnabled = isCpvmEnabled
+                    CentralPackageVersionsEnabled = isCpvmEnabled,
+                    CentralPackageVersionOverrideEnabled = await IsCentralPackageVersionOverrideEnabledAsync()
                 }
             };
         }

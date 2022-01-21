@@ -288,6 +288,11 @@ namespace NuGet.SolutionRestoreManager
             return GetSingleNonEvaluatedPropertyOrNull(tfms, ProjectBuildProperties.ManagePackageVersionsCentrally, MSBuildStringUtility.IsTrue);
         }
 
+        internal static bool IsCentralPackageVersionOverrideEnabled(IEnumerable tfms)
+        {
+            return !GetSingleNonEvaluatedPropertyOrNull(tfms, ProjectBuildProperties.EnablePackageVersionOverride, MSBuildStringUtility.IsFalse);
+        }
+
         private static NuGetFramework GetToolFramework(IEnumerable targetFrameworks)
         {
             return GetSingleNonEvaluatedPropertyOrNull(

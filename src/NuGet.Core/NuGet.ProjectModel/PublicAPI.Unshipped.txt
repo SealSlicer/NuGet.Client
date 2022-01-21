@@ -1,0 +1,2 @@
+NuGet.ProjectModel.ProjectRestoreMetadata.CentralPackageVersionOverrideEnabled.get -> bool
+NuGet.ProjectModel.ProjectRestoreMetadata.CentralPackageVersionOverrideEnabled.set -> void

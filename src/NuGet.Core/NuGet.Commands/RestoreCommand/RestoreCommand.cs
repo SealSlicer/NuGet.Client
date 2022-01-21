@@ -194,7 +194,7 @@ namespace NuGet.Commands
                 }
                 telemetry.TelemetryEvent[NoOpResult] = false; // Getting here means we did not no-op.
 
-                if (isCpvmEnabled && !await AreCentralVersionRequirementsSatisfiedAsync())
+                if (!await AreCentralVersionRequirementsSatisfiedAsync(_request.Project.RestoreMetadata))
                 {
                     // the errors will be added to the assets file
                     _success = false;
@@ -436,9 +436,29 @@ namespace NuGet.Commands
             }
         }
 
-        private async Task<bool> AreCentralVersionRequirementsSatisfiedAsync()
+        private async Task<bool> AreCentralVersionRequirementsSatisfiedAsync(ProjectRestoreMetadata projectRestoreMetadata)
         {
-            // The dependencies should not have versions explicitelly defined if cpvm is enabled.
+            if (projectRestoreMetadata == null || !projectRestoreMetadata.CentralPackageVersionsEnabled)
+            {
+                return true;
+            }
+
+            if (!projectRestoreMetadata.CentralPackageVersionOverrideEnabled)
+            {
+                IEnumerable<LibraryDependency> dependenciesWithVersionOverride = _request.Project.TargetFrameworks.SelectMany(tfm => tfm.Dependencies.Where(d => !d.AutoReferenced && d.VersionOverride != null));
+
+                if (dependenciesWithVersionOverride.Any())
+                {
+                    foreach (var item in dependenciesWithVersionOverride)
+                    {
+                        await _logger.LogAsync(RestoreLogMessage.CreateError(NuGetLogCode.NU1013, string.Format(CultureInfo.CurrentCulture, Strings.Error_CentralPackageVersions_VersionOverrideDisabled, item.Name)));
+                    }
+
+                    return false;
+                }
+            }
+
+            // The dependencies should not have versions explicitly defined if cpvm is enabled.
             IEnumerable<LibraryDependency> dependenciesWithDefinedVersion = _request.Project.TargetFrameworks.SelectMany(tfm => tfm.Dependencies.Where(d => !d.VersionCentrallyManaged && !d.AutoReferenced && d.VersionOverride == null));
             if (dependenciesWithDefinedVersion.Any())
             {

@@ -291,6 +291,7 @@ namespace NuGet.SolutionRestoreManager
                     CacheFilePath = NoOpRestoreUtilities.GetProjectCacheFilePath(cacheRoot: outputPath),
                     RestoreLockProperties = VSNominationUtilities.GetRestoreLockProperties(TargetFrameworks),
                     CentralPackageVersionsEnabled = cpvmEnabled,
+                    CentralPackageVersionOverrideEnabled = VSNominationUtilities.IsCentralPackageVersionOverrideEnabled(TargetFrameworks)
                 },
                 RuntimeGraph = VSNominationUtilities.GetRuntimeGraph(TargetFrameworks),
                 RestoreSettings = new ProjectRestoreSettings() { HideWarningsAndErrors = true }

@@ -160,7 +160,8 @@ namespace NuGet.Commands
             if (specItem != null)
             {
                 ProjectStyle restoreType = GetProjectStyle(specItem);
-                bool isCpvmEnabled = IsCentralVersionsManagementEnabled(specItem, restoreType);
+
+                (bool isCentralPackageManagementEnabled, bool isCentralPackageVersionOverrideEnabled) = GetCentralPackageManagementSettings(specItem, restoreType);
 
                 // Get base spec
                 if (restoreType == ProjectStyle.ProjectJson)
@@ -223,7 +224,7 @@ namespace NuGet.Commands
                     || restoreType == ProjectStyle.DotnetCliTool
                     || restoreType == ProjectStyle.DotnetToolReference)
                 {
-                    AddPackageReferences(result, items, isCpvmEnabled);
+                    AddPackageReferences(result, items, isCentralPackageManagementEnabled);
                     AddPackageDownloads(result, items);
                     AddFrameworkReferences(result, items);
 
@@ -290,7 +291,8 @@ namespace NuGet.Commands
                     result.RestoreMetadata.ValidateRuntimeAssets = true;
                 }
 
-                result.RestoreMetadata.CentralPackageVersionsEnabled = isCpvmEnabled;
+                result.RestoreMetadata.CentralPackageVersionsEnabled = isCentralPackageManagementEnabled;
+                result.RestoreMetadata.CentralPackageVersionOverrideEnabled = isCentralPackageVersionOverrideEnabled;
             }
 
             return result;
@@ -923,9 +925,28 @@ namespace NuGet.Commands
             return s;
         }
 
-        private static bool IsPropertyTrue(IMSBuildItem item, string propertyName)
+        private static bool IsPropertyFalse(IMSBuildItem item, string propertyName, bool defaultValue = false)
         {
-            return StringComparer.OrdinalIgnoreCase.Equals(item.GetProperty(propertyName), bool.TrueString);
+            string value = item.GetProperty(propertyName);
+
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return defaultValue;
+            }
+
+            return string.Equals(value, bool.FalseString, StringComparison.OrdinalIgnoreCase);
+        }
+
+        private static bool IsPropertyTrue(IMSBuildItem item, string propertyName, bool defaultValue = false)
+        {
+            string value = item.GetProperty(propertyName);
+
+            if (string.IsNullOrWhiteSpace(value))
+            {
+                return defaultValue;
+            }
+
+            return string.Equals(value, bool.TrueString, StringComparison.OrdinalIgnoreCase);
         }
 
         /// <summary>
@@ -1003,9 +1024,9 @@ namespace NuGet.Commands
             return restoreType;
         }
 
-        internal static bool IsCentralVersionsManagementEnabled(IMSBuildItem projectSpecItem, ProjectStyle projectStyle)
+        internal static (bool IsEnabled, bool IsVersionOverrideEnabled) GetCentralPackageManagementSettings(IMSBuildItem projectSpecItem, ProjectStyle projectStyle)
         {
-            return IsPropertyTrue(projectSpecItem, "_CentralPackageVersionsEnabled") && projectStyle == ProjectStyle.PackageReference;
+            return (IsPropertyTrue(projectSpecItem, "_CentralPackageVersionsEnabled") && projectStyle == ProjectStyle.PackageReference, !IsPropertyFalse(projectSpecItem, "EnablePackageVersionOverride"));
         }
 
         private static void AddCentralPackageVersions(PackageSpec spec, IEnumerable<IMSBuildItem> items)
