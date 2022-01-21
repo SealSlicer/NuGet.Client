@@ -734,8 +734,34 @@ namespace NuGet.Build.Tasks.Console.Test
                 ["_CentralPackageVersionsEnabled"] = "true",
             });
 
-            // Act + Assert
-            var result = MSBuildStaticGraphRestore.IsCentralVersionsManagementEnabled(project, projectStyle);
+            // Act
+            var result = MSBuildStaticGraphRestore.GetCentralPackageManagementSettings(project, projectStyle).IsEnabled;
+
+            // Assert
+            Assert.Equal(expected, result);
+        }
+
+        [Theory]
+        [InlineData(null, true)]
+        [InlineData("", true)]
+        [InlineData("                     ", true)]
+        [InlineData("true", true)]
+        [InlineData("invalid", true)]
+        [InlineData("false", false)]
+        [InlineData("           false    ", false)]
+        public void IsCentralVersionOverrideEnabled_OnlyPackageReferenceWithProjectCPVMEnabledProperty(string value, bool expected)
+        {
+            // Arrange
+            var project = new MockMSBuildProject(
+                new Dictionary<string, string>
+                {
+                    ["EnablePackageVersionOverride"] = value,
+                });
+
+            // Act
+            var result = MSBuildStaticGraphRestore.GetCentralPackageManagementSettings(project, ProjectStyle.PackageReference).IsVersionOverrideEnabled;
+
+            // Assert
             Assert.Equal(expected, result);
         }
 

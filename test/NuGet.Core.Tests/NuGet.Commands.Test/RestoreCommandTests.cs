@@ -2068,6 +2068,90 @@ namespace NuGet.Commands.Test
             }
         }
 
+        /// <summary>
+        /// Verifies an error is logged when a user attempts to specify a VersionOverride but the feature is disabled and that restore succeeds if the feature is enabled.
+        /// </summary>
+        /// <returns></returns>
+        [Theory]
+        [InlineData(true)]
+        [InlineData(false)]
+        public async Task RestoreCommand_CentralVersion_ErrorWhenVersionOverrideUsedButIsDisabled(bool isCentralPackageVersionOverrideEnabled)
+        {
+            const string projectName = "TestProject";
+
+            const string packageName = "PackageA";
+
+            // Arrange
+            using (var pathContext = new SimpleTestPathContext())
+            {
+                string projectPath = Path.Combine(pathContext.SolutionRoot, projectName);
+                string outputPath = Path.Combine(projectPath, "obj");
+
+                await SimpleTestPackageUtility.CreateFolderFeedV3Async(pathContext.PackageSource, PackageSaveMode.Defaultv3, new SimpleTestPackageContext(packageName, "1.0.0"));
+                await SimpleTestPackageUtility.CreateFolderFeedV3Async(pathContext.PackageSource, PackageSaveMode.Defaultv3, new SimpleTestPackageContext(packageName, "2.0.0"));
+
+                var packageRefDependecyFoo = new LibraryDependency()
+                {
+                    LibraryRange = new LibraryRange(packageName, versionRange: null, typeConstraint: LibraryDependencyTarget.Package),
+                    VersionOverride = new VersionRange(NuGetVersion.Parse("2.0.0"))
+                };
+
+                var packageVersion = new CentralPackageVersion(packageName, VersionRange.Parse("1.0.0"));
+
+                TargetFrameworkInformation targetFrameworkInformation = CreateTargetFrameworkInformation(
+                    new List<LibraryDependency>
+                    {
+                        packageRefDependecyFoo
+                    },
+                    new List<CentralPackageVersion>
+                    {
+                        packageVersion
+                    });
+
+                PackageSpec packageSpec = CreatePackageSpec(new List<TargetFrameworkInformation>() { targetFrameworkInformation }, targetFrameworkInformation.FrameworkName, projectName, projectPath, cpvmEnabled: true);
+
+                packageSpec.RestoreMetadata.CentralPackageVersionOverrideEnabled = isCentralPackageVersionOverrideEnabled;
+
+                var dgspec = new DependencyGraphSpec();
+
+                dgspec.AddProject(packageSpec);
+
+                var sources = new List<PackageSource>();
+                var logger = new TestLogger();
+
+                var request = new TestRestoreRequest(packageSpec, new PackageSource[] { new PackageSource(pathContext.PackageSource) }, pathContext.UserPackagesFolder, logger)
+                {
+                    LockFilePath = Path.Combine(projectPath, "project.assets.json"),
+                    ProjectStyle = ProjectStyle.PackageReference,
+                };
+
+                var restoreCommand = new RestoreCommand(request);
+
+                var result = await restoreCommand.ExecuteAsync();
+
+                // Assert
+
+                if (isCentralPackageVersionOverrideEnabled)
+                {
+                    Assert.True(result.Success);
+
+                    Assert.Equal(0, logger.ErrorMessages.Count);
+                }
+                else
+                {
+                    Assert.False(result.Success);
+
+                    Assert.Equal(1, logger.ErrorMessages.Count);
+
+                    logger.ErrorMessages.TryDequeue(out var errorMessage);
+
+                    Assert.True(errorMessage.Contains(NuGetLogCode.NU1013.ToString()));
+
+                    Assert.True(result.LockFile.LogMessages.Any(m => m.Code == NuGetLogCode.NU1013), "Lockfile should contain an error with code NU1013");
+                }
+            }
+        }
+
         [Fact]
         public async Task ExecuteAsync_WithSinglePackage_PopulatesCorrectTelemetry()
         {
