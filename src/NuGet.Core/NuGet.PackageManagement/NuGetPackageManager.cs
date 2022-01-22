@@ -197,7 +197,7 @@ namespace NuGet.PackageManagement
         /// <paramref name="nuGetProjectContext" /> are used in the process.
         /// </summary>
         [Obsolete("This is an unused method and may be removed in a future release. Please use other `InstallPackageAsync` methods.")]
-        public Task InstallPackageAsync( // Test only
+        public Task InstallPackageAsync(
             NuGetProject nuGetProject,
             string packageId,
             ResolutionContext resolutionContext,
@@ -210,13 +210,7 @@ namespace NuGet.PackageManagement
             {
                 throw new ArgumentNullException(nameof(resolutionContext));
             }
-            var logger = new LoggerAdapter(nuGetProjectContext);
-
-            var downloadContext = new PackageDownloadContext(resolutionContext.SourceCacheContext)
-            {
-                ParentId = nuGetProjectContext.OperationId,
-                ClientPolicyContext = ClientPolicyContext.GetClientPolicy(Settings, logger)
-            };
+            PackageDownloadContext downloadContext = CreateDownloadContext(resolutionContext, nuGetProjectContext);
 
             return InstallPackageAsync(
                 nuGetProject,
@@ -227,6 +221,18 @@ namespace NuGet.PackageManagement
                 new List<SourceRepository> { primarySourceRepository },
                 secondarySources,
                 token);
+        }
+
+        private PackageDownloadContext CreateDownloadContext(ResolutionContext resolutionContext, INuGetProjectContext nuGetProjectContext)
+        {
+            var logger = new LoggerAdapter(nuGetProjectContext);
+
+            var downloadContext = new PackageDownloadContext(resolutionContext.SourceCacheContext)
+            {
+                ParentId = nuGetProjectContext.OperationId,
+                ClientPolicyContext = ClientPolicyContext.GetClientPolicy(Settings, logger)
+            };
+            return downloadContext;
         }
 
         /// <summary>
@@ -263,20 +269,14 @@ namespace NuGet.PackageManagement
         /// </summary>
         public async Task InstallPackageAsync(NuGetProject nuGetProject, string packageId, ResolutionContext resolutionContext,
             INuGetProjectContext nuGetProjectContext, IEnumerable<SourceRepository> primarySources,
-            IEnumerable<SourceRepository> secondarySources, CancellationToken token) // Package Installer
+            IEnumerable<SourceRepository> secondarySources, CancellationToken token)
         {
             if (resolutionContext == null)
             {
                 throw new ArgumentNullException(nameof(resolutionContext));
             }
 
-            var logger = new LoggerAdapter(nuGetProjectContext);
-
-            var downloadContext = new PackageDownloadContext(resolutionContext.SourceCacheContext)
-            {
-                ParentId = nuGetProjectContext.OperationId,
-                ClientPolicyContext = ClientPolicyContext.GetClientPolicy(Settings, logger)
-            };
+            var downloadContext = CreateDownloadContext(resolutionContext, nuGetProjectContext);
 
             await InstallPackageAsync(
                 nuGetProject,
@@ -285,7 +285,8 @@ namespace NuGet.PackageManagement
                 nuGetProjectContext,
                 downloadContext,
                 primarySources,
-                secondarySources, token);
+                secondarySources,
+                token);
         }
 
         /// <summary>
@@ -335,7 +336,7 @@ namespace NuGet.PackageManagement
         /// Installs given <paramref name="packageIdentity" /> to NuGetProject <paramref name="nuGetProject" />
         /// <paramref name="resolutionContext" /> and <paramref name="nuGetProjectContext" /> are used in the process.
         /// </summary>
-        public Task InstallPackageAsync( // Test only - How does it compare to the other ones?
+        public Task InstallPackageAsync(
             NuGetProject nuGetProject,
             PackageIdentity packageIdentity,
             ResolutionContext resolutionContext,
@@ -344,25 +345,11 @@ namespace NuGet.PackageManagement
             IEnumerable<SourceRepository> secondarySources,
             CancellationToken token)
         {
-            if (resolutionContext == null)
-            {
-                throw new ArgumentNullException(nameof(resolutionContext));
-            }
-
-            var logger = new LoggerAdapter(nuGetProjectContext);
-
-            var downloadContext = new PackageDownloadContext(resolutionContext.SourceCacheContext)
-            {
-                ParentId = nuGetProjectContext.OperationId,
-                ClientPolicyContext = ClientPolicyContext.GetClientPolicy(Settings, logger)
-            };
-
             return InstallPackageAsync(
                 nuGetProject,
                 packageIdentity,
                 resolutionContext,
                 nuGetProjectContext,
-                downloadContext,
                 new List<SourceRepository> { primarySourceRepository },
                 secondarySources,
                 token);
@@ -411,13 +398,8 @@ namespace NuGet.PackageManagement
             {
                 throw new ArgumentNullException(nameof(resolutionContext));
             }
-            var logger = new LoggerAdapter(nuGetProjectContext);
 
-            var downloadContext = new PackageDownloadContext(resolutionContext.SourceCacheContext)
-            {
-                ParentId = nuGetProjectContext.OperationId,
-                ClientPolicyContext = ClientPolicyContext.GetClientPolicy(Settings, logger)
-            };
+            var downloadContext = CreateDownloadContext(resolutionContext, nuGetProjectContext);
 
             await InstallPackageAsync(
                 nuGetProject,
@@ -2407,13 +2389,7 @@ namespace NuGet.PackageManagement
             SourceCacheContext sourceCacheContext,
             CancellationToken token) // Everywhere.
         {
-            var logger = new LoggerAdapter(nuGetProjectContext);
-
-            var downloadContext = new PackageDownloadContext(sourceCacheContext)
-            {
-                ParentId = nuGetProjectContext.OperationId,
-                ClientPolicyContext = ClientPolicyContext.GetClientPolicy(Settings, logger)
-            };
+            var downloadContext = CreateDownloadContext(resolutionContext, nuGetProjectContext);
 
             await ExecuteNuGetProjectActionsAsync(nuGetProject,
                 nuGetProjectActions,
