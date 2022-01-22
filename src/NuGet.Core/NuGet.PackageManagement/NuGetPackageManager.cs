@@ -398,7 +398,7 @@ namespace NuGet.PackageManagement
         /// Installs given <paramref name="packageIdentity" /> to NuGetProject <paramref name="nuGetProject" />
         /// <paramref name="resolutionContext" /> and <paramref name="nuGetProjectContext" /> are used in the process.
         /// </summary>
-        public async Task InstallPackageAsync( // VS Package installer and Tests. - TODO NK
+        public async Task InstallPackageAsync(
             NuGetProject nuGetProject,
             PackageIdentity packageIdentity,
             ResolutionContext resolutionContext,
@@ -434,7 +434,7 @@ namespace NuGet.PackageManagement
         /// Installs given <paramref name="packageIdentity" /> to NuGetProject <paramref name="nuGetProject" />
         /// <paramref name="resolutionContext" /> and <paramref name="nuGetProjectContext" /> are used in the process.
         /// </summary>
-        public async Task InstallPackageAsync( // Internal - Install Command NuGet.Exe
+        public async Task InstallPackageAsync(
             NuGetProject nuGetProject,
             PackageIdentity packageIdentity,
             ResolutionContext resolutionContext,
@@ -2801,8 +2801,6 @@ namespace NuGet.PackageManagement
             return resolvedAction.FirstOrDefault(r => r.Project == buildIntegratedProject)?.Action as BuildIntegratedProjectAction;
         }
 
-        // TODO NK - Everything for DependecyGraphRestoreUtility:174 - PreviewRestoreAsync 
-        // TODO NK - Everything in general seems to come here.
         /// <summary>
         /// Run project actions for build integrated many projects.
         /// </summary>
